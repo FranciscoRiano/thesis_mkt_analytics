@@ -35,7 +35,6 @@ data_thesis <- data_thesis %>%
                              Q91 == "Female" ~ 1))
 
 
-
 data_thesis2 <- data_thesis %>% 
   dplyr::select(wtp:gender_) %>% 
   mutate(wtp_ = as.numeric(wtp)) %>% 
@@ -77,7 +76,7 @@ data_thesis2 <- data_thesis2 %>%
   
   
 data_thesis %>% 
-  group_by(items_d2) %>% 
+  group_by(condition) %>% 
   summarize( amt = n(), wtp_avg = mean(wtp), sd_wtp = sd(wtp), po_avg = mean(PO), po_sd = sd(PO))
 
 
@@ -90,7 +89,7 @@ sum(is.na(data_thesis2))
 
 
 process(data = data_thesis2, y = "wtp_", x = "items_d2" , m = "PO", w = "type_2", model = 8, 
-        cov = c("favorite_means_tr", "knowledge_cars", "gender_"), center = 2, moments = 1, modelbt = 1, boot = 1000, seed = 19421)
+        cov = c("favorite_means_tr", "knowledge_cars", "gender_", "age_rg"), center = 2, moments = 1, modelbt = 1, boot = 1000, seed = 19421)
  
                                                                                       
 process(data = data_thesis2, y = "wtp_", x = "items_d2" , m = "PO", w = "type_2", model = 8, 
@@ -105,16 +104,16 @@ process(data = data_thesis2, y = "wtp_", x = "items_d2" , m = "PO", w = "type_2"
 
 
 #Individual regressions and t-test
-movies_lm2_0 <- lm(wtp_~items_d2*type_2+gender_+knowledge_cars+favorite_means_tr_by+favorite_means_tr_Ot+favorite_means_tr_Pt+
+thesis_lm2_0 <- lm(wtp_~items_d2*type_2+gender_+knowledge_cars+favorite_means_tr_by+favorite_means_tr_Ot+favorite_means_tr_Pt+
                      favorite_means_tr_rc+favorite_means_tr_sm+ age_rg_30+age_rg_35+age_rg_40+age_rg_45+age_rg_50 , data_thesis2);
-summary(movies_lm2_0)
+summary(thesis_lm2_0)
 Anova(movies_lm2_0, type=3)
 
 help("Anova")
-movies_lm2_1 <- lm(PO~items_d2*type_2+gender_+knowledge_cars+favorite_means_tr_by+favorite_means_tr_Ot+favorite_means_tr_Pt+
+thesis_lm2_1 <- lm(PO~items_d2*type_2+gender_+knowledge_cars+favorite_means_tr_by+favorite_means_tr_Ot+favorite_means_tr_Pt+
                      favorite_means_tr_rc+favorite_means_tr_sm+ age_rg_30+age_rg_35+age_rg_40+age_rg_45+age_rg_50  , data_thesis2);
-summary(movies_lm2_1)
-Anova(movies_lm2_1, type=3)
+summary(thesis_lm2_1)
+Anova(thesis_lm2_1, type=3)
 
 
   #t-test for wtp
@@ -149,6 +148,8 @@ data_thesis2 %>%
   group_by(condition) %>% 
   summarize(dw = mean(PO), n = n(), mad = mean(wtp_))
 
+
+sum(0.4256+0.1827+0.2258+0.1385+0.6637)/5
 
 #visualizations
 

@@ -16,7 +16,7 @@ summary(data_thesis)
 #step1
 
 data_thesis %>% 
-  group_by(condition) %>% 
+  group_by(items_d) %>% 
   summarize( amt = n(), wtp_avg = mean(wtp), sd_wtp = sd(wtp), po_avg = mean(PO), po_sd = sd(PO))
 
 head(data_thesis$items_d)
@@ -76,9 +76,13 @@ data_thesis2 <- data_thesis2 %>%
   
   
 data_thesis %>% 
-  group_by(condition) %>% 
+  group_by(items_d) %>% 
   summarize( amt = n(), wtp_avg = mean(wtp), sd_wtp = sd(wtp), po_avg = mean(PO), po_sd = sd(PO))
 
+
+data_thesis %>% 
+  group_by(type) %>% 
+  summarize( amt = n(), wtp_avg = mean(wtp), sd_wtp = sd(wtp), po_avg = mean(PO), po_sd = sd(PO))
 
 
 
@@ -98,8 +102,7 @@ process(data = data_thesis2, y = "wtp_", x = "items_d2" , m = "PO", w = "type_2"
                 "age_rg_35", "age_rg_40", "age_rg_45", "age_rg_50"), center = 2, moments = 1, modelbt = 1, boot = 1000, seed = 19421)
 
 process(data = data_thesis2, y = "wtp_", x = "items_d2" , m = "PO", w = "type_2", model = 8, 
-        cov = c("knowledge_cars", "gender_","favorite_means_tr_by", "favorite_means_tr_Ot",
-                "favorite_means_tr_Pt", "favorite_means_tr_rc", "favorite_means_tr_sm"), center = 2, moments = 1, modelbt = 1, boot = 1000, seed = 19421)
+         center = 2, moments = 1, modelbt = 1, boot = 1000, seed = 19421)
 
 
 
@@ -115,6 +118,8 @@ thesis_lm2_1 <- lm(PO~items_d2*type_2+gender_+knowledge_cars+favorite_means_tr_b
 summary(thesis_lm2_1)
 Anova(thesis_lm2_1, type=3)
 
+thesis_lm2_2 <- lm(wtp_~ PO, data_thesis2);
+summary(thesis_lm2_2)
 
   #t-test for wtp
 t.test(wtp_ ~ items_d2, alternative = "greater", data = data_thesis2, var.equal=TRUE)
@@ -129,7 +134,7 @@ t.test(wtp_ ~ type_2, alternative = "two.sided", data = data_thesis2, var.equal=
 t.test(PO ~ items_d2, alternative = "greater", data = data_thesis2, var.equal=TRUE)
 t.test(PO ~ items_d2, alternative = "less", data = data_thesis2, var.equal=TRUE)
 t.test(PO ~ items_d2, alternative = "two.sided", data = data_thesis2, var.equal=TRUE)
-#high es 1 low es 0
+
 t.test(PO ~ type_2, alternative = "less", data = data_thesis2, var.equal=TRUE)
 t.test(PO ~ type_2, alternative = "greater", data = data_thesis2, var.equal=TRUE)
 t.test(PO ~ type_2, alternative = "two.sided", data = data_thesis2, var.equal=TRUE)
@@ -145,9 +150,12 @@ summary(data_thesis2)
 
 
 data_thesis2 %>% 
-  group_by(condition) %>% 
+  group_by(type) %>% 
   summarize(dw = mean(PO), n = n(), mad = mean(wtp_))
 
+data_thesis2 %>% 
+  group_by(items_d) %>% 
+  summarize(dw = mean(PO), n = n(), mad = mean(wtp_))
 
 sum(0.4256+0.1827+0.2258+0.1385+0.6637)/5
 
@@ -287,8 +295,7 @@ cor.test(data_thesis2$PO, data_thesis2$wtp_)
 cor.test(data_thesis2$PO, data_thesis2$knowledge_cars)
 cor.test(data_thesis2$wtp, data_thesis2$knowledge_cars)
 cor.test(data_thesis4$PO, data_thesis4$gender_)
-
-
+cor.test(data_thesis4$PO, data_thesis4$gender_)
 
 
 
@@ -301,3 +308,7 @@ moderated_mediation_fit <-
                 M    = PO,
                 Mod  = type_2)
 moderated_mediation_fit
+
+
+sum(0.5883, 0.5718, 0.5786, 0.5971, 0.6134 )/5
+

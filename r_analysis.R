@@ -16,7 +16,7 @@ summary(data_thesis)
 #step1
 
 data_thesis %>% 
-  group_by(items_d) %>% 
+  group_by(condition) %>% 
   summarize( amt = n(), wtp_avg = mean(wtp), sd_wtp = sd(wtp), po_avg = mean(PO), po_sd = sd(PO))
 
 head(data_thesis$items_d)
@@ -110,7 +110,7 @@ process(data = data_thesis2, y = "wtp_", x = "items_d2" , m = "PO", w = "type_2"
 thesis_lm2_0 <- lm(wtp_~items_d2*type_2+gender_+knowledge_cars+favorite_means_tr_by+favorite_means_tr_Ot+favorite_means_tr_Pt+
                      favorite_means_tr_rc+favorite_means_tr_sm+ age_rg_30+age_rg_35+age_rg_40+age_rg_45+age_rg_50 , data_thesis2);
 summary(thesis_lm2_0)
-Anova(movies_lm2_0, type=3)
+Anova(thesis_lm2_0, type=3)
 
 help("Anova")
 thesis_lm2_1 <- lm(PO~items_d2*type_2+gender_+knowledge_cars+favorite_means_tr_by+favorite_means_tr_Ot+favorite_means_tr_Pt+
@@ -118,8 +118,11 @@ thesis_lm2_1 <- lm(PO~items_d2*type_2+gender_+knowledge_cars+favorite_means_tr_b
 summary(thesis_lm2_1)
 Anova(thesis_lm2_1, type=3)
 
+
 thesis_lm2_2 <- lm(wtp_~ PO, data_thesis2);
 summary(thesis_lm2_2)
+
+
 
   #t-test for wtp
 t.test(wtp_ ~ items_d2, alternative = "greater", data = data_thesis2, var.equal=TRUE)
@@ -297,6 +300,13 @@ cor.test(data_thesis2$wtp, data_thesis2$knowledge_cars)
 cor.test(data_thesis4$PO, data_thesis4$gender_)
 cor.test(data_thesis4$PO, data_thesis4$gender_)
 
+wtp <- (data_thesis2$wtp_)
+po <- (data_thesis2$PO)
+know_car <- (data_thesis2$knowledge_cars)
+
+plot(log1p(wtp) ~ log1p(po), pch = 19, col = "black")
+plot(wtp ~ know_car, pch = 19, col = "black")
+
 
 
 library(JSmediation)
@@ -312,3 +322,33 @@ moderated_mediation_fit
 
 sum(0.5883, 0.5718, 0.5786, 0.5971, 0.6134 )/5
 
+
+
+
+
+
+#individual mediaiton
+
+  #step 1
+
+model_0 <- lm(wtp_ ~ type_2, data_thesis2)
+summary(model_0)
+
+  
+  #step 2
+
+model_m <- lm(PO ~ type_2, data_thesis2)
+summary(model_m)
+
+
+  #step 3
+
+model_y <- lm(wtp_ ~ type_2 + PO, data_thesis2)
+summary(model_y)
+
+
+library(mediation)
+results <- mediate(model_m, model_y, treat='type_2', mediator='PO',
+                   boot=TRUE, sims=500)
+
+summary(results)

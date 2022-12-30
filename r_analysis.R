@@ -118,11 +118,32 @@ thesis_lm2_1 <- lm(PO~items_d2*type_2+gender_+knowledge_cars+favorite_means_tr_b
 summary(thesis_lm2_1)
 Anova(thesis_lm2_1, type=3)
 
+#ANOVAs
+  #PO
+thesis_lm2_2 <- lm(PO~ items_d2, data_thesis2);
+#summary(thesis_lm2_2)
+Anova(thesis_lm2_2, type=2)
 
-thesis_lm2_2 <- lm(wtp_~ PO, data_thesis2);
-summary(thesis_lm2_2)
+thesis_lm2_3 <- lm(PO~ items_d2*type_2, data_thesis2);
+#summary(thesis_lm2_3)
+Anova(thesis_lm2_3, type=3)
 
+thesis_lm2_6 <- lm(PO~ type_2, data_thesis2);
+#summary(thesis_lm2_6)
+Anova(thesis_lm2_6, type=2)
 
+  #WTP
+thesis_lm2_4 <- lm(wtp_~ items_d2, data_thesis2);
+#summary(thesis_lm2_4)
+Anova(thesis_lm2_4, type =2)
+
+thesis_lm2_5 <- lm(wtp_~ items_d2*type_2, data_thesis2);
+#summary(thesis_lm2_5)
+Anova(thesis_lm2_5, type=3)
+
+thesis_lm2_7 <- lm(wtp_~ type_2, data_thesis2);
+#summary(thesis_lm2_7)
+Anova(thesis_lm2_7, type=2)
 
   #t-test for wtp
 t.test(wtp_ ~ items_d2, alternative = "greater", data = data_thesis2, var.equal=TRUE)
@@ -232,16 +253,17 @@ data_thesis %>%
 #randomization
 
 
-evaltot_aov1 <- lm(gender_ ~ conditions ,data_thesis)
+evaltot_aov1 <- lm(gender_ ~ items_d2 ,data_thesis2)
+summary(evaltot_aov1)
 Anova(evaltot_aov1, type=3)
-evaltot_aov2 <- lm(wtp ~ gender_ ,data_thesis)
+evaltot_aov2 <- lm(age_rg ~ items_d2 ,data_thesis2)
 summary(evaltot_aov2)
 Anova(evaltot_aov2, type=3)
 
 #Cronbach's alpha
 
 
-data_thesis3 <- data_thesis2 %>% 
+data_thesis3 <- data_thesis %>% 
   dplyr::select(Q62_1_,Q62_2_,Q62_3_,Q62_4_)
 
  cronbach.alpha(data_thesis3)

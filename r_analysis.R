@@ -93,7 +93,7 @@ sum(is.na(data_thesis2))
 
 
 process(data = data_thesis2, y = "wtp_", x = "items_d2" , m = "PO", w = "type_2", model = 8, 
-        cov = c("favorite_means_tr", "knowledge_cars", "gender_", "age_rg"), center = 2, moments = 1, modelbt = 1, boot = 1000, seed = 19421)
+         center = 2, moments = 1, modelbt = 1, boot = 1000, seed = 19421)
  
                                                                                       
 process(data = data_thesis2, y = "wtp_", x = "items_d2" , m = "PO", w = "type_2", model = 8, 
@@ -101,7 +101,7 @@ process(data = data_thesis2, y = "wtp_", x = "items_d2" , m = "PO", w = "type_2"
                 "favorite_means_tr_Pt", "favorite_means_tr_rc", "favorite_means_tr_sm", "age_rg_30",
                 "age_rg_35", "age_rg_40", "age_rg_45", "age_rg_50"), center = 2, moments = 1, modelbt = 1, boot = 1000, seed = 19421)
 
-process(data = data_thesis2, y = "wtp_", x = "items_d2" , m = "PO", w = "type_2", model = 8, 
+process(data = data_thesis2, y = "wtp_", x = "items_d2" , m = "PO", w = "type_2", model = 8, cov = "knowledge_cars",
          center = 2, moments = 1, modelbt = 1, boot = 1000, seed = 19421)
 
 
@@ -124,26 +124,27 @@ thesis_lm2_2 <- lm(PO~ items_d2, data_thesis2);
 #summary(thesis_lm2_2)
 Anova(thesis_lm2_2, type=2)
 
-thesis_lm2_3 <- lm(PO~ items_d2*type_2, data_thesis2);
+thesis_lm2_3 <- lm(PO~ items_d2*type_2+knowledge_cars, data_thesis2);
 #summary(thesis_lm2_3)
 Anova(thesis_lm2_3, type=3)
 
-thesis_lm2_6 <- lm(PO~ type_2, data_thesis2);
+thesis_lm2_6 <- lm(PO~ type_2+knowledge_cars, data_thesis2);
 #summary(thesis_lm2_6)
 Anova(thesis_lm2_6, type=2)
 
   #WTP
-thesis_lm2_4 <- lm(wtp_~ items_d2, data_thesis2);
+thesis_lm2_4 <- lm(wtp_~ items_d2+knowledge_cars, data_thesis2);
 #summary(thesis_lm2_4)
 Anova(thesis_lm2_4, type =2)
 
-thesis_lm2_5 <- lm(wtp_~ items_d2*type_2, data_thesis2);
+thesis_lm2_5 <- lm(wtp_~ items_d2*type_2+knowledge_cars, data_thesis2);
 #summary(thesis_lm2_5)
 Anova(thesis_lm2_5, type=3)
 
-thesis_lm2_7 <- lm(wtp_~ type_2, data_thesis2);
+thesis_lm2_7 <- lm(wtp_~ type_2+knowledge_cars, data_thesis2);
 #summary(thesis_lm2_7)
 Anova(thesis_lm2_7, type=2)
+
 
   #t-test for wtp
 t.test(wtp_ ~ items_d2, alternative = "greater", data = data_thesis2, var.equal=TRUE)
@@ -182,6 +183,9 @@ data_thesis2 %>%
   summarize(dw = mean(PO), n = n(), mad = mean(wtp_))
 
 sum(0.4256+0.1827+0.2258+0.1385+0.6637)/5
+
+
+
 
 #visualizations
 
@@ -254,11 +258,21 @@ data_thesis %>%
 
 
 evaltot_aov1 <- lm(gender_ ~ items_d2 ,data_thesis2)
-summary(evaltot_aov1)
+#summary(evaltot_aov1)
 Anova(evaltot_aov1, type=3)
-evaltot_aov2 <- lm(age_rg ~ items_d2 ,data_thesis2)
-summary(evaltot_aov2)
+
+
+
+demographics_thesis <- read.csv("C:/Users/frian/thesis_francisco_riano_ma/demographics_thesis.csv")
+
+demographics_thesis <- demographics_thesis %>% 
+  mutate(items_d2 = case_when(items_d == "high" ~ 0,
+                              TRUE ~ 1))
+
+evaltot_aov2 <- lm(Age ~ items_d2 ,demographics_thesis)
+#summary(evaltot_aov2)
 Anova(evaltot_aov2, type=3)
+
 
 #Cronbach's alpha
 
@@ -281,41 +295,20 @@ shapiro.test(data_thesis2$PO)
 #correlations
 
 data_thesis4 <- data_thesis2 %>% 
-  dplyr::select(-Q62_1,-Q62_2,-Q62_3,-Q62_4,-items_d,-items,-type,-condition,) %>% 
-  mutate(favorite_means_tr_ = case_when(favorite_means_tr == "My own car" ~ 1,
-                                        favorite_means_tr == "Rented or leased car" ~ 2,
-                                        favorite_means_tr == "Bike" ~ 3,
-                                        favorite_means_tr == "Scooter or motorbike" ~ 4,
-                                        favorite_means_tr == "Public transport" ~ 5,
-                                        favorite_means_tr == "Other" ~ 6)) %>% 
-  dplyr::select(-favorite_means_tr) %>% 
-  mutate(age_rg_ = case_when(age_rg == "from 21 years old to 25 years old" ~ 1,
-                             age_rg == "from 26 years old to 30 years old" ~ 2,
-                             age_rg == "from 31 years old to 35 years old" ~ 3,
-                             age_rg == "from 36 years old to 40 years old" ~ 4,
-                             age_rg == "from 41 years old to 45 years old" ~ 5,
-                             age_rg == "from 45 years old to 50 years old" ~ 6,
-                             age_rg == "51 years old or older" ~ 7)) %>% 
-  dplyr::select(-age_rg) %>% 
-  dplyr::select(-gender, -Q62_1_,-Q62_2_,-Q62_3_,-Q62_4_) 
-  
-  
-  
-
-
+  dplyr::select(-items_d,-type,-condition,-favorite_means_tr, -age_rg) %>% 
+  dplyr::select(PO:knowledge_cars)
 
 
 data_thesis4.cor = cor(data_thesis4)
   
 data_thesis4.cor = cor(data_thesis4, method = c("spearman"))
 library(corrplot)
-
-corrplot(data_thesis4.cor)
-lapply(split(data_thesis4[,1:5],data_thesis4$gender_),cor)
+library(psych)   
 
 
 cor.test(data_thesis2$wtp, data_thesis2$type_2)
 cor.test(data_thesis2$PO, data_thesis2$type_2)
+cor.test(data_thesis2$wtp_, data_thesis2$gender_)
 cor.test(data_thesis2$PO, data_thesis2$wtp_)
 cor.test(data_thesis2$PO, data_thesis2$knowledge_cars)
 cor.test(data_thesis2$wtp, data_thesis2$knowledge_cars)
@@ -330,6 +323,16 @@ plot(log1p(wtp) ~ log1p(po), pch = 19, col = "black")
 plot(wtp ~ know_car, pch = 19, col = "black")
 
 
+
+  #correlation matrix with level of significance
+
+library(sjPlot)
+
+tab_corr(data_thesis4, p.numeric = T)
+
+
+
+#Mediation alternative
 
 library(JSmediation)
 
